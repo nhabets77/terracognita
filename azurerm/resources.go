@@ -6,6 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/Azure/azure-sdk-for-go/services/preview/resources/mgmt/2021-06-01-preview/policy"
 	"github.com/cycloidio/terracognita/filter"
 	"github.com/cycloidio/terracognita/provider"
 )
@@ -115,7 +116,7 @@ const (
 	// DNS
 	DNSZone
 	DNSARecord //dns_a_record
-	DNSAaaRecord
+	DNSAaaaRecord
 	DNSCaaRecord
 	DNSCnameRecord
 	DNSMxRecord
@@ -126,7 +127,7 @@ const (
 	// Private DNS
 	PrivateDNSZone
 	PrivateDNSARecord //private_dns_a_record
-	PrivateDNSAaaRecord
+	PrivateDNSAaaaRecord
 	PrivateDNSCnameRecord
 	PrivateDNSMxRecord
 	PrivateDNSPtrRecord
@@ -261,7 +262,7 @@ var (
 		// 	Dns
 		DNSZone:        dnsZones,
 		DNSARecord:     dnsRecordSets,
-		DNSAaaRecord:   dnsRecordSets,
+		DNSAaaaRecord:  dnsRecordSets,
 		DNSCaaRecord:   dnsRecordSets,
 		DNSCnameRecord: dnsRecordSets,
 		DNSMxRecord:    dnsRecordSets,
@@ -272,7 +273,7 @@ var (
 		// Private DNS
 		PrivateDNSZone:                   privateDNSZones,
 		PrivateDNSARecord:                privateDNSRecordSets,
-		PrivateDNSAaaRecord:              privateDNSRecordSets,
+		PrivateDNSAaaaRecord:             privateDNSRecordSets,
 		PrivateDNSCnameRecord:            privateDNSRecordSets,
 		PrivateDNSMxRecord:               privateDNSRecordSets,
 		PrivateDNSPtrRecord:              privateDNSRecordSets,
@@ -1897,8 +1898,11 @@ func policyDefinitions(ctx context.Context, a *azurerm, ar *AzureReader, resourc
 	}
 	resources := make([]provider.Resource, 0, len(policyDefinitions))
 	for _, policyDefinition := range policyDefinitions {
-		r := provider.NewResource(*policyDefinition.ID, resourceType, a)
-		resources = append(resources, r)
+		// only adds policy definition type custom otherwise otherwise import all default ones (around 1k)
+		if policyDefinition.DefinitionProperties.PolicyType == policy.TypeCustom {
+			r := provider.NewResource(*policyDefinition.ID, resourceType, a)
+			resources = append(resources, r)
+		}
 	}
 	return resources, nil
 }
@@ -1923,8 +1927,11 @@ func policySetDefinitions(ctx context.Context, a *azurerm, ar *AzureReader, reso
 	}
 	resources := make([]provider.Resource, 0, len(policySetDefinitions))
 	for _, policySetDefinition := range policySetDefinitions {
-		r := provider.NewResource(*policySetDefinition.ID, resourceType, a)
-		resources = append(resources, r)
+		// only adds policy definition type custom otherwise otherwise import all default ones (around 1k)
+		if policySetDefinition.SetDefinitionProperties.PolicyType == policy.TypeCustom {
+			r := provider.NewResource(*policySetDefinition.ID, resourceType, a)
+			resources = append(resources, r)
+		}
 	}
 	return resources, nil
 }

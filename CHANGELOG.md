@@ -8,6 +8,8 @@
   ([PR #294](https://github.com/cycloidio/terracognita/pull/294))
 - `aws_lb_target_group_attachment` was raising a nil pointer exception
   ([Issue #297](https://github.com/cycloidio/terracognita/issues/297))
+- - `azurerm_dns_aaaa_record` fix name and only allow to import `azurerm_policy_set_definition` and `azurerm_policy_definition` of type custom to avoid importing all the default ones
+  ([Issue #297](https://github.com/cycloidio/terracognita/issues/303))
 
 
 ### Added
